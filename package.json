@@ -1,6 +1,10 @@
 {
   "name": "reparthune",
-  "workspaces": ["frontend", "backend", "shared"],
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ],
   "version": "1.0.0",
   "main": "index.js",
   "directories": {
@@ -12,5 +16,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
 }
