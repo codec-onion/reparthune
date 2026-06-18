@@ -5,8 +5,5 @@
     "noUnusedLocals": true,
     "noImplicitReturns": true,
     "skipLibCheck": true,
-    "paths": {
-      "@reparthune/shared": ["./shared/*"]
-    }
   }
 }
