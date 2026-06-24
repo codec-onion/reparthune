@@ -1,4 +1,5 @@
-import express, { Request, Response, urlencoded } from "express"
+import express, { type Request, type Response, urlencoded } from "express"
+// import type { User } from "@reparthune/shared"
 
 
 const app = express()
