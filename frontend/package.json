@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "@reparthune/frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@reparthune/shared": "*",
     "axios": "^1.18.1",
     "bootstrap": "^5.3.8",
     "pinia": "^3.0.4",

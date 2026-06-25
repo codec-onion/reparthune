@@ -1,4 +1,5 @@
 import express, { type Request, type Response, urlencoded } from "express"
+import 'dotenv/config'
 // import type { User } from "@reparthune/shared"
 
 
