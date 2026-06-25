@@ -1,5 +1,5 @@
 <template>
-<p>coucou</p>
+<p class="container-xl bg-info h-50">coucou</p>
 </template>
 
 <script setup lang="ts">
