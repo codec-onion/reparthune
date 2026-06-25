@@ -1,5 +1,5 @@
 import express, { type Request, type Response, urlencoded } from "express"
-import 'dotenv/config'
+import { env } from "./config/env"
 // import type { User } from "@reparthune/shared"
 
 
@@ -11,7 +11,7 @@ app.get("/health", (req: Request, res: Response) => {
   res.status(200).json("Coucou")
 })
 
-const PORT = process.env.PORT || 8081
+const PORT = env.PORT || 8081
 
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`)
