@@ -14,6 +14,5 @@ if (!parsedEnv.success) {
   console.error("Variables d'environnement invalides :", z.prettifyError(parsedEnv.error))
   process.exit(1)
 }
-console.log(parsedEnv)
 
 export const env = parsedEnv.data

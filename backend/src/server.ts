@@ -1,7 +1,9 @@
 import express, { type Request, type Response, urlencoded } from "express"
 import { env } from "./config/env"
+import { connectDB } from "./config/db"
 // import type { User } from "@reparthune/shared"
 
+connectDB()
 
 const app = express()
 
