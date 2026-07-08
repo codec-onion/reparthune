@@ -13,22 +13,22 @@ const consoleTransport = new winston.transports.Console({
   ),
 })
 
-const errorFileTransport = new DailyRotateFile({
+const errorFileTransport = {
   filename: "logs/error-%DATE%.log",
   datePattern: "YYYY-MM-DD",
   level: "error",
   maxSize: "10m",
   maxFiles: "14d",
   zippedArchive: true,
-})
+}
 
-const combinedFileTransport = new DailyRotateFile({
+const combinedFileTransport = {
   filename: "logs/combined-%DATE%.log",
   datePattern: "YYYY-MM-DD",
   maxSize: "20m",
   maxFiles: "14d",
   zippedArchive: true,
-})
+}
 
 const logger = winston.createLogger({
   level: isProduction ? "info" : "debug",
@@ -38,7 +38,7 @@ const logger = winston.createLogger({
     winston.format.json()
   ),
   transports: isProduction
-    ? [consoleTransport, errorFileTransport, combinedFileTransport]
+    ? [consoleTransport, new DailyRotateFile(errorFileTransport), new DailyRotateFile(combinedFileTransport)]
     : [consoleTransport],
 })
 
