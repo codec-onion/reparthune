@@ -1,9 +1,10 @@
-import mongoose from "mongoose"
-const { Schema } = mongoose
-
+// backend/src/modules/users/user.model.ts
+import mongoose, { Schema, Document, Types } from "mongoose"
 import type { UserBDD } from "@reparthune/shared"
 
-const userSchema = new Schema<UserBDD>({
+export interface UserDocument extends Document<Types.ObjectId>, Omit<UserBDD, "_id"> {}
+
+const userSchema = new Schema<UserDocument>({
   email: {
     type: String,
     required: true,
@@ -15,11 +16,14 @@ const userSchema = new Schema<UserBDD>({
     required: true,
     select: false
   },
-  name: String,
+  name: {
+    type: String,
+    required: true
+  },
   createdAt: {
     type: Date,
-    default: Date.now()
+    default: Date.now
   }
 })
 
-export const User = mongoose.model<UserBDD>('User', userSchema)
+export const User = mongoose.model<UserDocument>('User', userSchema)
