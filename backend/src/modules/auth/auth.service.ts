@@ -12,7 +12,7 @@ export async function register(data: UserRegister): Promise<UserDTO> {
   if (existing) {
     throw new AppError(
       "Impossible de s'enregistrer",
-      401,
+      409,
       "EMAIL_ALREADY_EXISTS"
     )
   }
