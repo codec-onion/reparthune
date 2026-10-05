@@ -1,4 +1,3 @@
-// backend/src/middlewares/error.middleware.ts
 import type { Request, Response, NextFunction } from "express"
 import { AppError } from "../errors/AppError"
 import logger from "../config/logger"
@@ -14,6 +13,7 @@ export function errorMiddleware(
     res.status(err.statusCode).json({
       errorCode: err.errorCode,
       message: err.message,
+      context: err.context
     })
     return
   }

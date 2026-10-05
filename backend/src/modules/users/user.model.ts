@@ -1,10 +1,7 @@
 // backend/src/modules/users/user.model.ts
-import mongoose, { Schema, Document, Types } from "mongoose"
-import type { UserBDD } from "@reparthune/shared"
+import mongoose, { Schema, type InferSchemaType, type HydratedDocument} from "mongoose"
 
-export interface UserDocument extends Document<Types.ObjectId>, Omit<UserBDD, "_id"> {}
-
-const userSchema = new Schema<UserDocument>({
+const userSchema = new Schema ({
   email: {
     type: String,
     required: true,
@@ -26,4 +23,7 @@ const userSchema = new Schema<UserDocument>({
   }
 })
 
-export const User = mongoose.model<UserDocument>('User', userSchema)
+export type UserFields = InferSchemaType<typeof userSchema>
+export type UserDoc = HydratedDocument<UserFields>
+
+export const User = mongoose.model('User', userSchema)

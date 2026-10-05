@@ -5,9 +5,10 @@ import * as userService from "../users/user.service"
 import { AppError } from "../../errors/AppError"
 import { env } from "../../config/env"
 
-import type { UserDTO, UserRegister, UserLogin } from "@reparthune/shared"
+import type { UserDTO } from "@reparthune/shared"
+import type { RegisterInput, LoginInput } from "@reparthune/shared"
 
-export async function register(data: UserRegister): Promise<UserDTO> {
+export async function register(data: RegisterInput): Promise<UserDTO> {
   const existing = await userService.findByEmail(data.email)
   if (existing) {
     throw new AppError(
@@ -28,7 +29,7 @@ export async function register(data: UserRegister): Promise<UserDTO> {
   return userService.createUser(user)
 }
 
-export async function login(data: UserLogin): Promise<{token: string, user: UserDTO}> {
+export async function login(data: LoginInput): Promise<{token: string, user: UserDTO}> {
   const user = await userService.findByEmailWithPassword(data.email)
   if (!user) {
     throw new AppError(
@@ -38,7 +39,7 @@ export async function login(data: UserLogin): Promise<{token: string, user: User
     )
   }
 
-  const isValid = bcrypt.compare(data.password, user.hashedPassword)
+  const isValid = await bcrypt.compare(data.password, user.hashedPassword)
   if(!isValid) {
     throw new AppError(
       "Mot de passe invalide",

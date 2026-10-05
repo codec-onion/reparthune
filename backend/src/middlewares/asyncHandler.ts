@@ -1,4 +1,3 @@
-// backend/src/middlewares/asyncHandler.ts
 import type { Request, Response, NextFunction, RequestHandler } from "express"
 
 function asyncHandler(

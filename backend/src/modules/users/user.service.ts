@@ -1,9 +1,9 @@
-import { User, type UserDocument } from "./user.model"
+import { User, type UserFields, type UserDoc } from "./user.model"
+import { type UserDTO } from "@reparthune/shared"
 
-import type { UserBDD, UserDTO } from "@reparthune/shared"
-type createUserInput = Omit<UserBDD, "_id" | "createdAt">
+type CreateUserInput = Omit<UserFields, "createdAt">
 
-function toUserDTO(user: UserDocument): UserDTO {
+function toUserDTO(user: UserDoc): UserDTO {
   return {
     _id: user._id.toString(),
     email: user.email,
@@ -12,7 +12,7 @@ function toUserDTO(user: UserDocument): UserDTO {
   }
 }
 
-export async function createUser(data: createUserInput): Promise<UserDTO> {
+export async function createUser(data: CreateUserInput): Promise<UserDTO> {
   const user = new User(data)
   await user.save()
   return toUserDTO(user)
@@ -23,7 +23,7 @@ export async function findByEmail(email: string): Promise<UserDTO | null> {
   return user ? toUserDTO(user) : null
 }
 
-export async function findByEmailWithPassword(email: string): Promise<UserDocument | null> {
-  const user = User.findOne({ email }).select("+hashedPassword")
+export async function findByEmailWithPassword(email: string): Promise<UserDoc | null> {
+  const user = await User.findOne({ email }).select("+hashedPassword")
   return user || null
 }

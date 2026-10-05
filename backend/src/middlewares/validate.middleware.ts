@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { AppError } from "../errors/AppError";
 
@@ -13,7 +13,7 @@ export function validate(schema: z.ZodType, target: ValidationTarget = "body") {
         new AppError("Erreur de validation des données",
           400,
           "VALIDATION_ERROR",
-          { context: z.prettifyError(result.error) }
+          { msg: z.prettifyError(result.error) }
         )
       );
     }
