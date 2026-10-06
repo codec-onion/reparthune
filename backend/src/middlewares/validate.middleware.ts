@@ -1,12 +1,13 @@
-import type { Request, Response, NextFunction } from "express";
-import { z } from "zod";
-import { AppError } from "../errors/AppError";
+import z from "zod"
+import { AppError } from "../errors/AppError"
+
+import type { Request, Response, NextFunction } from "express"
 
 type ValidationTarget = "body" | "params" | "query";
 
 export function validate(schema: z.ZodType, target: ValidationTarget = "body") {
   return (req: Request, res: Response, next: NextFunction) => {
-    const result = schema.safeParse(req[target]);
+    const result = schema.safeParse(req[target])
 
     if (!result.success) {
       return next(
@@ -15,10 +16,10 @@ export function validate(schema: z.ZodType, target: ValidationTarget = "body") {
           "VALIDATION_ERROR",
           { msg: z.prettifyError(result.error) }
         )
-      );
+      )
     }
 
-    req[target] = result.data;
-    next();
-  };
+    req[target] = result.data
+    next()
+  }
 }

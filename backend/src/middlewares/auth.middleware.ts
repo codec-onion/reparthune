@@ -1,18 +1,41 @@
 import jwt from "jsonwebtoken"
 import { env } from "../config/env"
+import { AppError } from "../errors/AppError"
+import { authPayloadSchema } from "../modules/auth/auth.payload"
 
 import type { Request, Response, NextFunction } from "express"
 
-function verifyJwt (req: Request, res: Response, next: NextFunction) {
-  // try {
-  const token = req.headers.authorization?.split(" ")[1] || ""
-  const decodedToken = jwt.verify(token, `${env.JWT_SECRET}`)
-  const userId = decodedToken.userId
-  req.auth = { userId: userId }
+function requireAuth(req: Request, res: Response, next: NextFunction) {
+  const [bearer, token] = req.headers.authorization?.split(" ") || []
+  if (bearer !== "Bearer" || !token) {
+    return next(unauthorizedError())
+  }
+
+  let decoded
+  try {
+    decoded = jwt.verify(token, env.JWT_SECRET)
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      return next(new AppError("Token expiré", 401, "TOKEN_EXPIRED"))
+    } else if (error instanceof jwt.JsonWebTokenError) {
+      return next(unauthorizedError())
+    } else {
+      return next(error)
+    }
+  }
+
+  const payload = authPayloadSchema.safeParse(decoded)
+
+  if (!payload.success) {
+    return next(unauthorizedError())
+  }
+
+  req.auth = payload.data
   next()
-  // } catch(error) {
-  //   res.status(401).json({ message: "Vous n'êtes pas autorisé à accéder à la page demandée.", error })
-  // }
 }
 
-export default verifyJwt
+function unauthorizedError () {
+  return new AppError("Token invalide", 401, "UNAUTHORIZED")
+}
+
+export default requireAuth

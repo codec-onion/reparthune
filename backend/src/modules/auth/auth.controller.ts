@@ -10,3 +10,7 @@ export const login = asyncHandler(async (req, res) => {
   const data = await authService.login(req.body)
   res.status(200).json(data)
 })
+
+export const authMe = asyncHandler(async (req, res) => {
+  res.status(200).json("Authentification résussie")
+})
