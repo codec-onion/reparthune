@@ -8,6 +8,10 @@ import { env } from "../../config/env"
 import type { UserDTO } from "@reparthune/shared"
 import type { RegisterInput, LoginInput } from "@reparthune/shared"
 
+// création du hash factice
+const bcryptCost = 12
+const fakeHash = bcrypt.hashSync("jbdciebf'èç(!§jncjd", bcryptCost)
+
 export async function register(data: RegisterInput): Promise<UserDTO> {
   const existing = await userService.findByEmail(data.email)
   if (existing) {
@@ -18,7 +22,7 @@ export async function register(data: RegisterInput): Promise<UserDTO> {
     )
   }
 
-  const hashedPassword = await bcrypt.hash(data.password, 10)
+  const hashedPassword = await bcrypt.hash(data.password, bcryptCost)
 
   const user = {
     email: data.email,
@@ -32,8 +36,10 @@ export async function register(data: RegisterInput): Promise<UserDTO> {
 export async function login(data: LoginInput): Promise<{token: string, user: UserDTO}> {
   const user = await userService.findByEmailWithPassword(data.email)
   if (!user) {
+    // ajout d'une comparaison de hash pour que le temps de requête soit le même entre un user inexistant et un mdp invalide
+    await bcrypt.compare(data.password, fakeHash)
     throw new AppError(
-      "Email invalide",
+      "Identifiants invalides",
       401,
       "INVALID_CREDENTIALS"
     )
@@ -42,7 +48,7 @@ export async function login(data: LoginInput): Promise<{token: string, user: Use
   const isValid = await bcrypt.compare(data.password, user.hashedPassword)
   if(!isValid) {
     throw new AppError(
-      "Mot de passe invalide",
+      "Identifiants invalides",
       401,
       "INVALID_CREDENTIALS"
     )
