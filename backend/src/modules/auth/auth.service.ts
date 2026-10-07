@@ -62,11 +62,16 @@ export async function login(data: LoginInput): Promise<{token: string, user: Use
 
   return {
     token,
-    user: {
-      _id: user._id.toString(),
-      email: user.email,
-      name: user.name,
-      createdAt: user.createdAt
-    }
+    user: userService.toUserDTO(user)
   }
+}
+
+export async function getCurrentUser(userId: string): Promise<UserDTO> {
+  const user = await userService.findById(userId)
+  // token valide mais compte supprimé depuis son émission
+  if (!user) {
+    throw new AppError("Token invalide", 401, "UNAUTHORIZED")
+  }
+
+  return user
 }

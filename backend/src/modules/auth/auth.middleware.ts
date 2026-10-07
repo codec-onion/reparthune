@@ -38,4 +38,11 @@ function unauthorizedError () {
   return new AppError("Token invalide", 401, "UNAUTHORIZED")
 }
 
+export function getAuthPayload (req: Request) {
+  if (!req.auth) {
+    throw unauthorizedError()
+  }
+  return req.auth
+}
+
 export default requireAuth
