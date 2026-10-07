@@ -1,6 +1,6 @@
 import { Router } from "express"
 import * as authControllers from "./auth.controller"
-import requireAuth from "../../middlewares/auth.middleware"
+import requireAuth from "./auth.middleware"
 import { validate } from "../../middlewares/validate.middleware"
 import { registerSchema, loginSchema } from "@reparthune/shared"
 
