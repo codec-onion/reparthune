@@ -1,7 +1,7 @@
 // backend/src/modules/users/user.model.ts
-import mongoose, { Schema, type InferSchemaType, type HydratedDocument} from "mongoose"
+import mongoose, { type InferSchemaType, type HydratedDocument } from "mongoose"
 
-const userSchema = new Schema ({
+const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
