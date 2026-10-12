@@ -1,4 +1,7 @@
-import mongoose, { type InferSchemaType, type HydratedDocument } from "mongoose"
+import mongoose from "mongoose"
+import { role, currency, sharesLimits } from "@reparthune/shared"
+
+import type { InferSchemaType, HydratedDocument } from "mongoose"
 
 const memberSchema = new mongoose.Schema({
   userId: {
@@ -13,13 +16,12 @@ const memberSchema = new mongoose.Schema({
   },
   shares: {
     type: Number,
-    min: 0,
-    max: 99,
+    ...sharesLimits,
     required: true
   },
   role: {
     type: String,
-    enum: ["admin", "member", "readonly"],
+    enum: role,
     required: true
   }
 })
@@ -31,8 +33,7 @@ const participantSchema = new mongoose.Schema({
   },
   shares: {
     type: Number,
-    min: 0,
-    max: 99,
+    ...sharesLimits,
     required: true
   }
 })
@@ -52,7 +53,7 @@ const groupSchema = new mongoose.Schema({
   },
   currency: {
     type: String,
-    enum: ["EUR", "USD", "CHF", "GBP", "JPY"],
+    enum: currency,
     default: "EUR"
   },
   createdBy: {

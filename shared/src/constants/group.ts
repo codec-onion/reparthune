@@ -6,7 +6,7 @@ export const currency = ["EUR", "USD", "CHF", "GBP", "JPY"] as const
 
 export type Currency = typeof currency
 
-export const sharesLimit = {
+export const sharesLimits = {
   min: 0,
   max: 99
 }
