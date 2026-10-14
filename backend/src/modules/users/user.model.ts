@@ -1,5 +1,6 @@
-// backend/src/modules/users/user.model.ts
-import mongoose, { type InferSchemaType, type HydratedDocument } from "mongoose"
+import mongoose from "mongoose"
+
+import type { InferSchemaType, HydratedDocument } from "mongoose"
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -24,6 +25,7 @@ const userSchema = new mongoose.Schema({
 })
 
 export type UserFields = InferSchemaType<typeof userSchema>
+export type UserCreate = Omit<UserFields, "createdAt">
 export type UserDoc = HydratedDocument<UserFields>
 
 export const User = mongoose.model('User', userSchema)

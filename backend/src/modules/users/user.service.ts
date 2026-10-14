@@ -1,12 +1,12 @@
 import mongoose from "mongoose"
-
-import { User, type UserFields, type UserDoc } from "./user.model"
+import { User } from "./user.model"
 import { AppError } from "../../errors/AppError"
-import { type UserDTO } from "@reparthune/shared"
 
-type CreateUserInput = Omit<UserFields, "createdAt">
+import type { UserFields, UserDoc, UserCreate } from "./user.model"
+import type { UserDTO } from "@reparthune/shared"
+import type { Synced } from "../../types/syncedType"
 
-export function toUserDTO(user: UserDoc): UserDTO {
+export function toUserDTO(user: UserDoc): Synced<UserDTO, UserFields, "hashedPassword"> {
   return {
     _id: user._id.toString(),
     email: user.email,
@@ -15,7 +15,7 @@ export function toUserDTO(user: UserDoc): UserDTO {
   }
 }
 
-export async function createUser(data: CreateUserInput): Promise<UserDTO> {
+export async function createUser(data: UserCreate): Promise<UserDTO> {
   const user = new User(data)
   try {
     await user.save()

@@ -1,7 +1,8 @@
 import mongoose from "mongoose"
-import { role, currency, sharesLimits } from "@reparthune/shared"
+import { roles, currencies, sharesLimits } from "@reparthune/shared"
 
 import type { InferSchemaType, HydratedDocument } from "mongoose"
+import type { Plain } from "../../types/syncedType"
 
 const memberSchema = new mongoose.Schema({
   userId: {
@@ -21,7 +22,7 @@ const memberSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: role,
+    enum: roles,
     required: true
   }
 })
@@ -53,8 +54,8 @@ const groupSchema = new mongoose.Schema({
   },
   currency: {
     type: String,
-    enum: currency,
-    default: "EUR"
+    enum: currencies,
+    required: true
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -66,9 +67,13 @@ const groupSchema = new mongoose.Schema({
     validate: {
       validator: (members: unknown[]) => members.length > 0,
       message: "Un groupe doit contenir au moins un membre"
-    }
+    },
+    required: true
   },
-  presets: [presetSchema],
+  presets: {
+    type: [presetSchema],
+    required: true
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -76,6 +81,16 @@ const groupSchema = new mongoose.Schema({
 })
 
 export type GroupFields = InferSchemaType<typeof groupSchema>
+export type MemberFields = InferSchemaType<typeof memberSchema>
+export type PresetFields = InferSchemaType<typeof presetSchema>
+export type ParticipantFields = InferSchemaType<typeof participantSchema>
+
+export type GroupCreate = Omit<Plain<GroupFields>, "createdAt">
+export type MemberCreate = GroupCreate["members"][number]
+
 export type GroupDoc = HydratedDocument<GroupFields>
+export type MemberDoc = GroupDoc["members"][number]
+export type PresetDoc = GroupDoc["presets"][number]
+export type ParticipantDoc = GroupDoc["presets"][number]["participants"][number]
 
 export const Group = mongoose.model("Group", groupSchema)

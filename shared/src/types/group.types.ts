@@ -1,12 +1,31 @@
-export interface Group {
+import type { Currency, Role } from "../constants/group"
+
+export interface MemberDTO {
   _id: string,
+  userId: string | null,
   name: string,
-  members: Member[],
-  createdAt: Date
+  shares: number,
+  role: Role
 }
 
-export interface Member {
+export interface ParticipantDTO {
+  _id: string,
+  memberId: string,
+  shares: number
+}
+
+export interface PresetDTO {
   _id: string,
   name: string,
-  role: string
+  participants: ParticipantDTO[]
+}
+
+export interface GroupDTO {
+  _id: string,
+  name: string,
+  currency: Currency,
+  createdBy: string,
+  members: MemberDTO[],
+  presets: PresetDTO[],
+  createdAt: string
 }

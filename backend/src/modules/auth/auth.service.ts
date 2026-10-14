@@ -7,6 +7,7 @@ import { env } from "../../config/env"
 
 import type { UserDTO } from "@reparthune/shared"
 import type { RegisterInput, LoginInput } from "@reparthune/shared"
+import type { AuthPayload } from "./auth.payload"
 
 // création du hash factice
 const bcryptCost = 12
@@ -54,8 +55,10 @@ export async function login(data: LoginInput): Promise<{token: string, user: Use
     )
   }
 
+  const authPayload: AuthPayload = {userId: user._id.toString()}
+
   const token = jwt.sign(
-    {userId: user._id.toString()},
+    authPayload,
     env.JWT_SECRET,
     {expiresIn: "7d"}
   )

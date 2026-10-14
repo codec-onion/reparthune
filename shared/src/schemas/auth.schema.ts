@@ -1,6 +1,6 @@
 import z from 'zod';
-import { userDTOSchema } from './user.schema';
 
+const email = z.email({error: "Format d'email invalide"})
 
 export const passwordSchema = z
   .string()
@@ -12,13 +12,16 @@ export const passwordSchema = z
   .regex(/[^A-Za-z0-9]/, { error: 'Le mot de passe doit contenir au moins un caractère spécial' })
   .regex(/^\S*$/, { error: 'Le mot de passe ne doit pas contenir d\'espaces' })
 
-export const registerSchema = userDTOSchema
-  .pick({email: true, name: true})
-  .extend({password: passwordSchema})
+export const registerSchema = z.object({
+  email,
+  name: z.string().min(1, {error: "Le nom est requis"}),
+  password: passwordSchema
+})
 
-export const loginSchema = userDTOSchema
-  .pick({email: true})
-  .extend({password: z.string().min(1, { error: 'Le mot de passe est requis' })})
+export const loginSchema = z.object({
+  email,
+  password: z.string().min(1, {error: "Le mot de passe est requis"})
+})
 
 export type RegisterInput = z.infer<typeof registerSchema>
 export type LoginInput = z.infer<typeof loginSchema>

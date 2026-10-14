@@ -1,33 +1,17 @@
 import z from "zod"
-import { currency, role, sharesLimits } from "../constants/group"
+import { currencies, sharesLimits } from "../constants/group"
 
-const shares = z.number().min(sharesLimits.min).max(sharesLimits.max)
-
-const memberDTOSchema = z.object({
-  userId: z.string().min(1).nullable(),
-  name: z.string().min(1),
-  shares,
-  role: z.enum(role)
-})
-
-const participantDTOSchema = z.object({
-  memberId: z.string().min(1),
+const shares = z.number().min(sharesLimits.min, { error: `Le nombre de parts doit être au minimum de ${sharesLimits.min}` }).max(sharesLimits.max, { error: `Le nombre de parts doit être au maximum de ${sharesLimits.max}` })
+const memberSchema = z.object({
+  name: z.string().min(1, { error: "Le nom du membre est requis" }),
   shares
 })
 
-const presetDTOSchema = z.object({
-  name: z.string().min(1),
-  participants: z.array(participantDTOSchema).nonempty()
+export const createGroupSchema = z.object({
+  name: z.string().min(1, { error: "Le nom du groupe est requis" }),
+  currency: z.enum(currencies).default("EUR"),
+  members: z.array(memberSchema),
+  creator: memberSchema
 })
 
-export const groupDTOSchema = z.object({
-  _id: z.string().min(1),
-  name: z.string().min(1),
-  currency: z.enum(currency).default("EUR"),
-  createdBy: z.string().min(1),
-  members: z.array(memberDTOSchema).nonempty(),
-  presets: z.array(presetDTOSchema),
-  createdAt: z.string().min(1)
-})
-
-export type GroupeDTO = z.infer<typeof groupDTOSchema>
+export type CreateGroupInput = z.infer<typeof createGroupSchema>
