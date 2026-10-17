@@ -15,7 +15,7 @@ app.get("/health", (req: Request, res: Response) => {
   res.status(200).json("Coucou")
 })
 app.use("/auth", authRoutes)
-app.use("/group", groupRoutes)
+app.use("/groups", groupRoutes)
 
 app.use(errorMiddleware)
 

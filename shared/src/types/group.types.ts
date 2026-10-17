@@ -23,6 +23,11 @@ export interface PresetDTO {
 export interface GroupDTO {
   _id: string,
   name: string,
+  description: string | null,
+  period: {
+    start: string,
+    end: string
+  },
   currency: Currency,
   createdBy: string,
   members: MemberDTO[],

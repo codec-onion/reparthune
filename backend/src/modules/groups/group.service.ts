@@ -1,8 +1,27 @@
 import mongoose from "mongoose"
 import { Group } from "./group.model"
+import { AppError } from "../../errors/AppError"
 
-import type { GroupDoc, MemberDoc, PresetDoc, ParticipantDoc, GroupFields, MemberFields, ParticipantFields, PresetFields, GroupCreate, MemberCreate } from "./group.model"
-import type { GroupDTO, MemberDTO, PresetDTO, CreateGroupInput, ParticipantDTO } from "@reparthune/shared"
+import type {
+  GroupDoc,
+  MemberDoc,
+  PresetDoc,
+  ParticipantDoc,
+  GroupFields,
+  MemberFields,
+  ParticipantFields,
+  PresetFields,
+  GroupCreate,
+  MemberCreate
+} from "./group.model"
+import type {
+  GroupDTO,
+  MemberDTO,
+  PresetDTO,
+  ParticipantDTO,
+  CreateGroupInput,
+  UpdateGroupInput
+} from "@reparthune/shared"
 import type { Synced } from "../../types/syncedType"
 
 function toMemberDTO(member: MemberDoc): Synced<MemberDTO, MemberFields> {
@@ -35,6 +54,8 @@ export function toGroupDTO(group: GroupDoc): Synced<GroupDTO, GroupFields> {
   return {
     _id: group._id.toString(),
     name: group.name,
+    description: group.description ?? null,
+    period: group.period,
     currency: group.currency,
     createdBy: group.createdBy.toString(),
     members: group.members.map(toMemberDTO),
@@ -43,8 +64,19 @@ export function toGroupDTO(group: GroupDoc): Synced<GroupDTO, GroupFields> {
   }
 }
 
+export async function getGroups (userId: string): Promise<GroupDTO[] | null> {
+  const groups = await Group.find({ "members.userId": userId })
+  return groups.map(toGroupDTO)
+}
+
+export async function getOneGroup (groupId: string, userId: string): Promise<GroupDTO | null> {
+  if (!mongoose.isValidObjectId(groupId)) throw new AppError("Syntaxe id de groupe non valide", 400, "VALIDATION_ERROR")
+  const group = await Group.findOne({ _id: groupId, "members.userId": userId })
+  return group ? toGroupDTO(group) : null
+}
+
 export async function createGroup(data: CreateGroupInput, userId: string): Promise<GroupDTO> {
-  const creator: Required<MemberCreate> = {
+  const creator: MemberCreate = {
     ...data.creator,
     role: "admin",
     userId: new mongoose.Types.ObjectId(userId)
@@ -52,9 +84,12 @@ export async function createGroup(data: CreateGroupInput, userId: string): Promi
   const members: MemberCreate[] = data.members.map(member => ({
     ...member,
     role: "readonly",
+    userId: null
   }))
   const groupInput: GroupCreate = {
     name: data.name,
+    description: data.description,
+    period: data.period,
     currency: data.currency,
     createdBy: new mongoose.Types.ObjectId(userId),
     members: [...members, creator],
@@ -66,6 +101,13 @@ export async function createGroup(data: CreateGroupInput, userId: string): Promi
   return toGroupDTO(group)
 }
 
-// export async function updateGroup(data): Promise<GroupDTO> {
+export async function updateGroup(group: GroupDoc, data: UpdateGroupInput): Promise<GroupDTO> {
+  group.set(data)
+  const savedGroup = await group.save()
+  return toGroupDTO(savedGroup)
+}
 
-// }
+export async function deleteGroup(group: GroupDoc) {
+  const deletedGroup = await group.deleteOne(group._id)
+  if (!deletedGroup.acknowledged) throw new Error
+}

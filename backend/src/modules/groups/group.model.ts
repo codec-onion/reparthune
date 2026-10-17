@@ -7,7 +7,6 @@ import type { Plain } from "../../types/syncedType"
 const memberSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    default: null,
     index: true,
     ref: 'User'
   },
@@ -37,7 +36,7 @@ const participantSchema = new mongoose.Schema({
     ...sharesLimits,
     required: true
   }
-})
+}, { _id: false })
 
 const presetSchema = new mongoose.Schema({
   name: {
@@ -47,9 +46,34 @@ const presetSchema = new mongoose.Schema({
   participants: [participantSchema]
 })
 
+const periodFieldFormat = [/^\d{4}-\d{2}-\d{2}$/, "Le format doit être YYYY-MM-DD"] as const
+const periodSchema = new mongoose.Schema({
+  start: {
+    type: String,
+    match: periodFieldFormat,
+    required: true
+  },
+  end: {
+    type: String,
+    match: periodFieldFormat,
+    required: true,
+    validate: {
+      validator: function (this: { start: string }, end: string) {
+        return end >= this.start
+      },
+      message: "La date de fin ne peut être inférieure à la date de début"
+    }
+  }
+}, { _id: false })
+
 const groupSchema = new mongoose.Schema({
   name: {
     type: String,
+    required: true
+  },
+  description: String,
+  period: {
+    type: periodSchema,
     required: true
   },
   currency: {
@@ -85,8 +109,8 @@ export type MemberFields = InferSchemaType<typeof memberSchema>
 export type PresetFields = InferSchemaType<typeof presetSchema>
 export type ParticipantFields = InferSchemaType<typeof participantSchema>
 
-export type GroupCreate = Omit<Plain<GroupFields>, "createdAt">
-export type MemberCreate = GroupCreate["members"][number]
+export type GroupCreate = Required<Omit<Plain<GroupFields>, "createdAt">>
+export type MemberCreate = Required<GroupCreate["members"][number]>
 
 export type GroupDoc = HydratedDocument<GroupFields>
 export type MemberDoc = GroupDoc["members"][number]
